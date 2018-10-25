@@ -1,0 +1,37 @@
+ - baixar o entity no nuget
+
+ - configurar a connection string:
+<connectionStrings>
+   <add name="EFConnectionString" connectionString="Data Source=ALS-NB;Language=Brazilian;Initial Catalog=Universidade;Integrated Security=True" providerName="System.Data.SqlClient" />
+</connectionStrings>
+
+- criar as classes POCO, são aquelas classes que servem pra modelar o banco
+
+- criar classe virtual como se fosse a classe estrangeira:
+public int UniversidadeID { get; set; }
+
+        [ForeignKey("UniversidadeID")]
+        public virtual Universidade Universidade  { get; set; }
+
+- criar a pasta de contexto onde terá a manipulação de dados e dentro criar a classe de contexto
+
+-criar um construtor em na classe context para fazer ela saber qual connections string que vai usar
+ public EFContext() : base("EFConnectionString") { }
+
+- criar os dbsets para cada classe que criei
+public DbSet<Universidade> Universidades { get; set; }
+
+- confugrar oara que as propriedades dbsets não ficarem no plural
+protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            base.OnModelCreating(modelBuilder);
+        }
+
+-criei na pasta controller um novo controller para cada classe POCO  usando o scaffold onde já criava pra mim views de create, update, delete, os css, 
+
+- hora de abrir o banco de dados e conectar ao banco de dados, lembrando que o: connectionString="Data Source=ALS-NB; é a propriedade do connection string onde eu coloco o nome do meu banco de dados que no meu caso é: HEISENBERG-PC\SQLEXPRESS
+
+- ir no nuget console e adicionar o migrations que é responsável por pegar todas as propriedades e dbsets que criamos e transformar em tabelas o comando é: Enable-Migrations depois que der certo eu dou um: Add-Migration Initial ele vai criar uma classe de toda a modelagem que eu fiz no meu código. O ultimo comando é Update-Database isso vai fazer com que ele crie la no meu banco de dados uma database
+
+- se eu quiser adicionar mais colunas na tabela e recriar no banco de dados, faço o dois ultimos passos do comando migrations que são: Add-Migration Initial(ou qualquer outro nome) e Update-Database
